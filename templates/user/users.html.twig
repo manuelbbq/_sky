@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% for user in users %}
+        <span>{{ user.name }}</span>
+        <a href="{{ path('app_user',{id: user.id}) }}">Show</a>
+        <a href="{{ path('app_edit_user',{id: user.id}) }}">Edit</a>
+        <br>
+    {% endfor %}
+
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
