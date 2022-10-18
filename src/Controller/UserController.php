@@ -46,10 +46,8 @@ class UserController extends AbstractController
     #[Route('users/edit/{id}', name: 'app_edit_user')]
     public function edit(User $user, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN')){
-            dd('du darfst');
-        }
+        $this->denyAccessUnlessGranted('EDIT', $user);
+
 //        $form = $this->createForm(UserFormType::class, $user);
 //        $form->handleRequest($request);
 //        if($form->isSubmitted() && $form->isValid()){
@@ -58,7 +56,7 @@ class UserController extends AbstractController
 //            $entityManager->flush();
 //
 //            return $this->redirectToRoute('app_users');
-        throw $this->createAccessDeniedException('NEIN');
+
     }
 
     #[Route('/users/{id}', name: 'app_user')]
