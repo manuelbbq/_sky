@@ -5,7 +5,9 @@
     {% for user in users %}
         <span>{{ user.name }}</span>
         <a href="{{ path('app_user',{id: user.id}) }}">Show</a>
+        {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('app_edit_user',{id: user.id}) }}">Edit</a>
+        {% endif %}
         <br>
     {% endfor %}
 
