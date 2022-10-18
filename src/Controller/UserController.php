@@ -7,6 +7,7 @@ use App\Form\UserFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -45,6 +46,10 @@ class UserController extends AbstractController
     #[Route('users/edit/{id}', name: 'app_edit_user')]
     public function edit(User $user, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN')){
+            dd('du darfst');
+        }
 //        $form = $this->createForm(UserFormType::class, $user);
 //        $form->handleRequest($request);
 //        if($form->isSubmitted() && $form->isValid()){
@@ -53,7 +58,7 @@ class UserController extends AbstractController
 //            $entityManager->flush();
 //
 //            return $this->redirectToRoute('app_users');
-        dd('edit');
+        throw $this->createAccessDeniedException('NEIN');
     }
 
     #[Route('/users/{id}', name: 'app_user')]
