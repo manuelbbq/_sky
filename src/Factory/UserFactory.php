@@ -46,7 +46,7 @@ final class UserFactory extends ModelFactory
             'plz' => self::faker()->numberBetween(10000,99999),
             'telefon' => self::faker()->phoneNumber(),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'ort' => self::faker()->text(),
+            'ort' => self::faker()->city(),
         ];
     }
 

@@ -10,29 +10,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class UserController extends AbstractController
 {
-//    #[Route('/user', name: 'app_user')]
-//    public function index(): Response
-//    {
-//        return $this->render('user/index.html.twig', [
-//            'controller_name' => 'UserController',
-//        ]);
-//    }
+
+    #[Route('/', name: 'app_home')]
+    public function homepage(AuthenticationUtils $authenticationUtils) :Response
+    {
+        if ($this->getUser()){
+            return $this->redirectToRoute('app_users');
+        } else {
+            return $this->redirectToRoute('app_login');
+        }
+    }
+
 
     #[Route('/users', name: 'app_users')]
-    public function index(UserRepository $userRepository) :Response
+    public function index(UserRepository $userRepository): Response
     {
         $users = $userRepository->findAll();
-        return $this->render('user/users.html.twig', ['users'=> $users]);
-    }
-    #[Route('/users/{id}', name: 'app_user')]
-    public function show(User $user) :Response
-    {
-        return $this->render('user/user.html.twig',[
-            'user'=> $user]);
 
+        return $this->render('user/users.html.twig', ['users' => $users]);
+    }
+
+
+    #[Route('users/search', name: 'app_search')]
+    public function search(): Response
+    {
+        dd('search');
     }
 
     #[Route('users/edit/{id}', name: 'app_edit_user')]
@@ -47,7 +53,17 @@ class UserController extends AbstractController
 //
 //            return $this->redirectToRoute('app_users');
         dd('edit');
-        }
+    }
+
+    #[Route('/users/{id}', name: 'app_user')]
+    public function show(User $user): Response
+    {
+        return $this->render('user/user.html.twig', [
+            'user' => $user,
+        ]);
+
+    }
+
 
 }
 

@@ -17,6 +17,14 @@
         {% endblock %}
     </head>
     <body>
+    {% if app.user %}
+    <div>
+        <a href="{{ path('app_user',{id:app.user.id}) }}">My Data</a>
+        <a href="{{ path('app_users') }}">List person</a>
+        <a href="{{ path('app_search') }}">Search</a>
+        <a href="{{ path('app_logout') }}">Logout</a>
+    </div>
+    {% endif %}
         {% block body %}{% endblock %}
     </body>
 </html>
