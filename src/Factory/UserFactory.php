@@ -51,7 +51,8 @@ final class UserFactory extends ModelFactory
             'telefon' => self::faker()->phoneNumber(),
             'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'ort' => self::faker()->city(),
-            'plainPassword' => 'test'
+            'plainPassword' => 'test',
+            'isVerified' => true,
         ];
     }
 

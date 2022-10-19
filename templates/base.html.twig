@@ -17,6 +17,16 @@
         {% endblock %}
     </head>
     <body>
+    {%  for flash in app.flashes('success') %}
+    <div>
+        {{ flash }}
+        {% endfor %}
+    </div>
+    {%  for flash in app.flashes('error') %}
+    <div>
+        {{ flash }}
+        {% endfor %}
+    </div>
     {% if app.user %}
     <div>
         <a href="{{ path('app_user',{id:app.user.id}) }}">My Data</a>
