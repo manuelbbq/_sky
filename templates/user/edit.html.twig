@@ -15,9 +15,11 @@
     {{ form_row(form.plz) }}
     {{ form_row(form.ort) }}
     {{ form_row(form.telefon) }}
+    {% if is_granted('ROLE_ADMIN') %}
     {{ form_row(form.roles) }}
+    {% endif %}
 
 
     <button type="submit" class="btn">Edit</button>
-    {{ form_end(form) }}
+    {{ form_end(form,{'render_rest': false}) }}
 {% endblock %}

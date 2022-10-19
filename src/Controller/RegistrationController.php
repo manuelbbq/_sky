@@ -9,6 +9,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -22,7 +24,8 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        VerifyEmailHelperInterface $verifyEmailHelper
+        VerifyEmailHelperInterface $verifyEmailHelper,
+        MailerInterface $mailer
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -46,13 +49,22 @@ class RegistrationController extends AbstractController
                 $user->getEmail(),
                 ['id' => $user->getId()]
             );
-            $this->addFlash('success', 'link'.$signatureComponents->getSignedUrl());
+//            $this->addFlash('success', 'link'.$signatureComponents->getSignedUrl());
 
             // do anything else you need here, like send an email
+            $link = $signatureComponents->getSignedUrl();
+            $email = (new Email())
+                ->from('test@test.com')
+                ->to($user->getEmail())
+                ->subject('Registration')
+                ->text($signatureComponents->getSignedUrl())
+                ->html("<a href='$link'>Link</a> ")
+            ;
+            $mailer->send($email);
+            return $this->render('registration/email_Registration.html.twig');
 
-            return $this->redirectToRoute('app_users');
+
         }
-
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);
@@ -80,7 +92,7 @@ class RegistrationController extends AbstractController
         $user->setIsVerified(true);
         $entityManager->flush();
         $this->addFlash('success','email ok');
-       return $this->redirectToRoute('app_login');
+       return $this->render('registration/email_verified.html.twig');
 
     }
 }
