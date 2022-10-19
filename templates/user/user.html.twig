@@ -4,6 +4,7 @@
     <h1>{{ user.email }}</h1>
     {% if is_granted('POST_EDIT', user ) %}
         <a href="{{ path('app_edit_user',{id: user.id}) }}">Edit</a>
+        <a href="{{ path('app_delete',{id: user.id}) }}">Delete</a>
     {% endif %}
 
 {% endblock %}
