@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit{% endblock %}
+
+{% block body %}
+
+    <h1> Edit</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.plainPassword, {
+        label: 'Password'
+    }) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.plz) }}
+    {{ form_row(form.ort) }}
+    {{ form_row(form.telefon) }}
+    {{ form_row(form.roles) }}
+
+
+    <button type="submit" class="btn">Edit</button>
+    {{ form_end(form) }}
+{% endblock %}

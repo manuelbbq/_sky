@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserFormType;
+use App\Form\UserUpdateFormType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -17,9 +19,9 @@ class UserController extends AbstractController
 {
 
     #[Route('/', name: 'app_home')]
-    public function homepage(AuthenticationUtils $authenticationUtils) :Response
+    public function homepage(AuthenticationUtils $authenticationUtils): Response
     {
-        if ($this->getUser()){
+        if ($this->getUser()) {
             return $this->redirectToRoute('app_users');
         } else {
             return $this->redirectToRoute('app_login');
@@ -44,19 +46,33 @@ class UserController extends AbstractController
     }
 
     #[Route('users/edit/{id}', name: 'app_edit_user')]
-    public function edit(User $user, Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $this->denyAccessUnlessGranted('POST_EDIT', $user);
 
-//        $form = $this->createForm(UserFormType::class, $user);
-//        $form->handleRequest($request);
-//        if($form->isSubmitted() && $form->isValid()){
-//            $user = $form->getData();
-//            $entityManager->persist($user);
-//            $entityManager->flush();
-//
-//            return $this->redirectToRoute('app_users');
-            dd('yeah');
+        $form = $this->createForm(UserUpdateFormType::class, $user);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+
+
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_users');
+        }
+
+        return $this->renderForm('user/edit.html.twig',[
+            'form' => $form
+        ]);
+
 
     }
 
