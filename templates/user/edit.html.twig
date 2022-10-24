@@ -18,7 +18,8 @@
     {% if is_granted('ROLE_ADMIN') %}
     {{ form_row(form.roles) }}
     {% endif %}
-
+    {{ form_widget(form._token) }}
+{#    <input type="hidden" name="token" value="{{ csrf_token('edit_item') }}"/>#}
 
     <button type="submit" class="btn">Edit</button>
     {{ form_end(form,{'render_rest': false}) }}

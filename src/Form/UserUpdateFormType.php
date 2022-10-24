@@ -35,7 +35,7 @@ class UserUpdateFormType extends AbstractType
             ->add('ort')
             ->add('plainPassword', RepeatedType::class,[
                 'type'=> PasswordType::class,
-                'invalid_message'=> 'nciht gleich',
+                'invalid_message'=> 'nicht gleich',
                 'options' => ['attr' => ['class' => 'password-field'],
                 'mapped'=> false],
                 'required'=> true,
