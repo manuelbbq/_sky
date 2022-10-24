@@ -29,6 +29,7 @@ class UserController extends AbstractController
     }
 
 
+
     #[Route('/users', name: 'app_users')]
     public function index(UserRepository $userRepository): Response
     {
@@ -39,11 +40,11 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('users/search', name: 'app_search')]
-    public function search(): Response
-    {
-        dd('search');
-    }
+//    #[Route('users/search', name: 'app_search')]
+//    public function search(): Response
+//    {
+//        dd('search');
+//    }
 
     #[Route('users/edit/{id}', name: 'app_edit_user')]
     public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response

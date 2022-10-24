@@ -1,0 +1,11 @@
+
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% block content_title %} Profile {% endblock %}
+{% block main %}
+    <p>{{ app.user.name }}</p>
+    <p>{{ app.user.email }}</p>
+    <p>{{ app.user.plz }}</p>
+    <p>{{ app.user.ort }}</p>
+    <p>{{ app.user.telefon }}</p>
+    <p>{{ app.user.password }}</p>
+{% endblock %}
