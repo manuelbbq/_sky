@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\User;
 use App\Form\SearchFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -21,50 +22,17 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserCrudController extends AbstractCrudController
 {
-    private $adminUrlGenerator;
-
-    public function __construct(AdminUrlGenerator $adminUrlGenerator)
-    {
-        $this->adminUrlGenerator= $adminUrlGenerator;
-    }
 
     public static function getEntityFqcn(): string
     {
         return User::class;
     }
 
-    #[Route('/admin/search', name: 'app_search')]
-    public function search(Request $request)
+    public function configureFilters(Filters $filters): Filters
     {
-        $form =$this->createForm(SearchFormType::class);
-        if ($form->isSubmitted()){
-            $form->handleRequest($request);
-
-            $url = $this->adminUrlGenerator
-                ->setController(self::class)
-                ->setAction(Crud::PAGE_INDEX)
-                ->set('filters[email][value]','user@test.de')
-                ->set('filters[email][comparison', '=')
-                ->generateUrl();
-
-            return $this->redirect($url);
-        }
-
-
-
-        return $this->renderForm('admin/search.html.twig',[
-            'form'=> $form,
-        ]);
+        return parent::configureFilters($filters)
+            ->add('name');
     }
-    #[Route('admin/result', name: 'app_result')]
-    public function result(Request $request)
-    {
-
-
-    }
-
-
-
 
 
     public function configureFields(string $pageName): iterable
@@ -87,6 +55,14 @@ class UserCrudController extends AbstractCrudController
             ->renderExpanded();
 
 
+
+
     }
 
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->setPaginatorPageSize(5);
+    }
 }

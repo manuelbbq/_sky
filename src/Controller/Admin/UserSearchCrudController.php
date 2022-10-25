@@ -11,6 +11,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 
 class UserSearchCrudController extends UserCrudController
 {
+
+
+
+
     public function createIndexQueryBuilder(
         SearchDto $searchDto,
         EntityDto $entityDto,
