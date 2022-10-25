@@ -64,9 +64,9 @@ class DashboardController extends AbstractDashboardController
         ;
 
 
-        yield MenuItem::linkToCrud('Search', 'fa fa-question-circle', User::class)
-            ->setController(UserSearchCrudController::class)
-            ->setAction('search')
+        yield MenuItem::linkToRoute('Search', 'fa fa-question-circle','app_search' )
+
+
         ;
 
 
