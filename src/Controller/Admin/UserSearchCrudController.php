@@ -12,18 +12,22 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
-use http\Env\Request;
+
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserSearchCrudController extends UserCrudController
 {
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
+    private AdminUrlGenerator $adminUrlGenerator;
 
-    public function __construct(TokenStorageInterface $tokenStorage)
+    public function __construct(TokenStorageInterface $tokenStorage, AdminUrlGenerator $adminUrlGenerator)
     {
         $this->tokenStorage = $tokenStorage;
+        $this->adminUrlGenerator= $adminUrlGenerator;
     }
 
 
@@ -35,8 +39,16 @@ class UserSearchCrudController extends UserCrudController
         $form = $this->createForm(SearchFormType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-
-            return dd($form);
+            $url = $this->adminUrlGenerator
+//                ->setDashboard(DashboardController::class)
+                ->setController(UserSearchCrudController::class)
+                ->setAction('index')
+                ->setAll([
+                    'email'=>'test',
+                    'user'=>'Gina'])
+                ->generateUrl();
+            dd($request);
+            return $this->redirect($url,);
         }
 
         return $this->renderForm('admin/search.html.twig', [
@@ -49,8 +61,9 @@ class UserSearchCrudController extends UserCrudController
         SearchDto $searchDto,
         EntityDto $entityDto,
         FieldCollection $fields,
-        FilterCollection $filters
+        FilterCollection $filters,
     ): QueryBuilder {
+//        dd($re;
         return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
             ->andWhere('entity.email = :user')
             ->setParameter('user', 'user@test.de');
@@ -59,7 +72,7 @@ class UserSearchCrudController extends UserCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setPageTitle(Crud::PAGE_INDEX, 'Search');
+            ->setPageTitle(Crud::PAGE_INDEX, 'result');
     }
 
 //    public function createNewForm(
