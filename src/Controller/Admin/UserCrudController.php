@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\SearchFormType;
+use App\Form\UserUpdateFormType;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -18,12 +20,22 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use mysql_xdevapi\Exception;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserCrudController extends AbstractCrudController
 {
+    private UserPasswordHasherInterface $userPasswordHasher;
+
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+    {
+        $this->userPasswordHasher = $userPasswordHasher;
+    }
+
 
     public static function getEntityFqcn(): string
     {
@@ -58,9 +70,9 @@ class UserCrudController extends AbstractCrudController
             ->allowMultipleChoices()
             ->renderExpanded()
             ->setPermission('POST_EDIT');
-        yield TextField::new('plainPassword')
-        ->hideOnIndex()
-        ->hideOnDetail();
+        yield TextField::new('password')
+            ->hideOnIndex()
+            ->hideOnDetail();
 
 
     }
@@ -76,6 +88,55 @@ class UserCrudController extends AbstractCrudController
     {
         return parent::configureActions($actions)
             ->setPermission(Action::INDEX, 'ROLE_USER');
+    }
+
+//    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+//    {
+//            if ($entityInstance instanceof User){
+//                throw new Exception('kein User');
+//            }
+//            dd($entityInstance);
+//
+//            $entityInstance->setPassword(
+//                $this->userPasswordHasher->hashPassword(
+//                    $entityInstance,
+//                    $entityInstance->getPlainpassword()
+//                )
+//            );
+//
+//            $entityManager->persist($entityInstance);
+//            $entityManager->flush();
+//
+//    }
+
+//    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+//    {
+
+////
+////
+
+//
+//        $entityManager->persist($entityInstance);
+//        $entityManager->flush();
+//    }
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!($entityInstance instanceof User)) {
+            dd('ok');
+        }
+
+        $plainpw = $entityInstance->getPassword();
+//        dd($plainpw);
+
+        $entityInstance->setPassword(
+            $this->userPasswordHasher->hashPassword(
+                $entityInstance,
+                $plainpw
+            )
+        );
+
+        $entityManager->persist($entityInstance);
+        $entityManager->flush();
     }
 
 
