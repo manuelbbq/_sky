@@ -22,6 +22,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use mysql_xdevapi\Exception;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -70,9 +72,17 @@ class UserCrudController extends AbstractCrudController
             ->allowMultipleChoices()
             ->renderExpanded()
             ->setPermission('POST_EDIT');
-        yield TextField::new('password')
-            ->hideOnIndex()
-            ->hideOnDetail();
+        yield TextField::new('password', 'New password')
+            ->onlyWhenUpdating()
+        ->setRequired(false)
+        ->setFormType(RepeatedType::class)
+        ->setFormTypeOptions([
+            'type'=> PasswordType::class,
+            'first_options'=>['label' => 'New password'],
+            'second_options'=>['label' => 'Repeat password'],
+            'error_bubbling'=> true,
+            'invalid_message'=>'The passwordfields do not match',
+        ]);
 
 
     }
