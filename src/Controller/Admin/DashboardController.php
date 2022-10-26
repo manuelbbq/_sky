@@ -25,7 +25,7 @@ class DashboardController extends AbstractDashboardController
 
 
 
-    #[IsGranted('ROLE_ADMIN')]
+//    #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
@@ -58,21 +58,12 @@ class DashboardController extends AbstractDashboardController
             ->setAction('detail')
             ->setEntityId($this->getUser()->getId())
         ;
-
         yield MenuItem::linkToCrud('List Person', 'fa fa-question-circle', User::class)
             ->setController(UserCrudController::class)
         ;
-
-
         yield MenuItem::linkToRoute('Search', 'fa fa-question-circle','app_search' )
-
-
         ;
-
-
-
-
-        yield MenuItem::linkToLogout('logout', 'fas fa-home', 'app_search');
+    yield MenuItem::linkToLogout('logout', 'fas fa-home', 'app_search');
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 
@@ -80,8 +71,13 @@ class DashboardController extends AbstractDashboardController
     {
         return parent::configureActions()
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_EDIT, Action::DELETE);
+            ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->setPermission(Action::EDIT, 'POST_EDIT')
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+            ->setPermission(Action::NEW, 'ROLE_ADMIN');
+
     }
+
 
 
 }

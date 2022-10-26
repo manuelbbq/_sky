@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\SearchFormType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -39,22 +41,26 @@ class UserCrudController extends AbstractCrudController
     {
 
         yield IdField::new('id')
-        ->onlyOnIndex();
+            ->onlyOnIndex();
         yield TextField::new('name')
-        ->setTemplatePath('admin/field/name.html.twig');
+            ->setTemplatePath('admin/field/name.html.twig');
         yield EmailField::new('email');
         yield NumberField::new('plz');
         yield TextField::new('ort');
         yield TextField::new('telefon');
         yield BooleanField::new('is_verified');
-        yield DateField::new('created_at');
-        $roles = ['ROLE_USER','ROLE_ADMIN'];
+        yield DateField::new('created_at')
+            ->hideWhenUpdating()
+            ->hideWhenCreating();
+        $roles = ['ROLE_USER', 'ROLE_ADMIN'];
         yield ChoiceField::new('roles')
-            ->setChoices(array_combine($roles,$roles))
+            ->setChoices(array_combine($roles, $roles))
             ->allowMultipleChoices()
-            ->renderExpanded();
-
-
+            ->renderExpanded()
+            ->setPermission('POST_EDIT');
+        yield TextField::new('plainPassword')
+        ->hideOnIndex()
+        ->hideOnDetail();
 
 
     }
@@ -65,4 +71,12 @@ class UserCrudController extends AbstractCrudController
         return parent::configureCrud($crud)
             ->setPaginatorPageSize(5);
     }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->setPermission(Action::INDEX, 'ROLE_USER');
+    }
+
+
 }

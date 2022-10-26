@@ -22,7 +22,7 @@ class UserController extends AbstractController
     public function homepage(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_users');
+            return $this->redirectToRoute('admin');
         } else {
             return $this->redirectToRoute('app_login');
         }
