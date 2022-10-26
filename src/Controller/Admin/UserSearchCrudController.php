@@ -16,6 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -24,10 +25,13 @@ class UserSearchCrudController extends UserCrudController
     private TokenStorageInterface $tokenStorage;
     private AdminUrlGenerator $adminUrlGenerator;
 
-    public function __construct(TokenStorageInterface $tokenStorage, AdminUrlGenerator $adminUrlGenerator)
+    private RequestStack $requestStack;
+
+    public function __construct(TokenStorageInterface $tokenStorage, AdminUrlGenerator $adminUrlGenerator, RequestStack $requestStack)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->adminUrlGenerator= $adminUrlGenerator;
+        $this->adminUrlGenerator = $adminUrlGenerator;
+        $this->requestStack = $requestStack;
     }
 
 
@@ -44,11 +48,13 @@ class UserSearchCrudController extends UserCrudController
                 ->setController(UserSearchCrudController::class)
                 ->setAction('index')
                 ->setAll([
-                    'email'=>'test',
-                    'user'=>'Gina'])
+                    'email' => $form->get('email')->getData(),
+                    'name' => $form->get('name')->getData(),
+                ])
                 ->generateUrl();
-            dd($request);
-            return $this->redirect($url,);
+
+//            dd($form->get('name'))->getData();
+            return $this->redirect($url);
         }
 
         return $this->renderForm('admin/search.html.twig', [
@@ -62,11 +68,17 @@ class UserSearchCrudController extends UserCrudController
         EntityDto $entityDto,
         FieldCollection $fields,
         FilterCollection $filters,
+
     ): QueryBuilder {
-//        dd($re;
+
+        $request = $this->requestStack->getCurrentRequest();
+//        dd($request->query->all());
+//        dd($_GET['name']);
+
         return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
-            ->andWhere('entity.email = :user')
-            ->setParameter('user', 'user@test.de');
+            ->andWhere('entity.email = :email')
+            ->andWhere()
+            ->setParameter('email', $request->query->get('email'));
     }
 
     public function configureCrud(Crud $crud): Crud
