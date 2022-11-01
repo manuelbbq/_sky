@@ -25,17 +25,21 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserCrudController extends AbstractCrudController
 {
     private UserPasswordHasherInterface $userPasswordHasher;
+    private RequestStack $requestStack;
 
 
-    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, RequestStack $requestStack)
     {
         $this->userPasswordHasher = $userPasswordHasher;
+        $this->requestStack = $requestStack;
     }
 
 
@@ -72,17 +76,17 @@ class UserCrudController extends AbstractCrudController
             ->allowMultipleChoices()
             ->renderExpanded()
             ->setPermission('POST_EDIT');
-        yield TextField::new('password', 'New password')
+        yield TextField::new('Plainpassword', 'New password')
             ->onlyWhenUpdating()
-        ->setRequired(false)
-        ->setFormType(RepeatedType::class)
-        ->setFormTypeOptions([
-            'type'=> PasswordType::class,
-            'first_options'=>['label' => 'New password'],
-            'second_options'=>['label' => 'Repeat password'],
-            'error_bubbling'=> true,
-            'invalid_message'=>'The passwordfields do not match',
-        ]);
+            ->setRequired(false)
+            ->setFormType(RepeatedType::class)
+            ->setFormTypeOptions([
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'New password'],
+                'second_options' => ['label' => 'Repeat password'],
+                'error_bubbling' => true,
+                'invalid_message' => 'The passwordfields do not match',
+            ]);
 
 
     }
@@ -100,51 +104,33 @@ class UserCrudController extends AbstractCrudController
             ->setPermission(Action::INDEX, 'ROLE_USER');
     }
 
-//    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
-//    {
-//            if ($entityInstance instanceof User){
-//                throw new Exception('kein User');
-//            }
-//            dd($entityInstance);
-//
-//            $entityInstance->setPassword(
-//                $this->userPasswordHasher->hashPassword(
-//                    $entityInstance,
-//                    $entityInstance->getPlainpassword()
-//                )
-//            );
-//
-//            $entityManager->persist($entityInstance);
-//            $entityManager->flush();
-//
-//    }
 
-//    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
-//    {
-
-////
-////
-
-//
-//        $entityManager->persist($entityInstance);
-//        $entityManager->flush();
-//    }
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if (!($entityInstance instanceof User)) {
             dd('ok');
         }
 
-        $plainpw = $entityInstance->getPassword();
-//        dd($plainpw);
 
-        $entityInstance->setPassword(
-            $this->userPasswordHasher->hashPassword(
-                $entityInstance,
-                $plainpw
-            )
-        );
 
+
+
+
+
+//        dd($entityInstance->getPlainpassword());
+        if (!is_null($entityInstance->getPlainpassword())) {
+
+
+            $entityInstance->setPassword(
+                $this->userPasswordHasher->hashPassword(
+                    $entityInstance,
+                    $entityInstance->getPlainpassword()
+                )
+
+
+            );
+        }
+//    dd('test');
         $entityManager->persist($entityInstance);
         $entityManager->flush();
     }

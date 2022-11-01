@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface ,PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -41,7 +41,7 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    private ?string $plainPassword;
+    private ?string $plainPassword = null;
 
     #[ORM\Column]
     private ?bool $isVerified = false;
@@ -51,10 +51,6 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
     {
         $this->createdAt = new \DateTimeImmutable();
     }
-
-
-
-
 
 
     public function getId(): ?int
@@ -81,7 +77,7 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -109,7 +105,7 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-         $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function getName(): ?string
@@ -177,9 +173,11 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
-        $this->password = $password;
+
+            $this->password = $password;
+
 
         return $this;
     }
@@ -187,7 +185,7 @@ class User implements UserInterface ,PasswordAuthenticatedUserInterface
     /**
      * @return mixed
      */
-    public function getPlainpassword() : ?string
+    public function getPlainpassword(): ?string
     {
         return $this->plainPassword;
     }
