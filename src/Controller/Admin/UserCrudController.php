@@ -35,7 +35,6 @@ class UserCrudController extends AbstractCrudController
     private RequestStack $requestStack;
 
 
-
     public function __construct(UserPasswordHasherInterface $userPasswordHasher, RequestStack $requestStack)
     {
         $this->userPasswordHasher = $userPasswordHasher;
@@ -61,12 +60,15 @@ class UserCrudController extends AbstractCrudController
         yield IdField::new('id')
             ->onlyOnIndex();
         yield TextField::new('name')
-            ->setTemplatePath('admin/field/name.html.twig');
+            ->setTemplatePath('admin/field/name.html.twig')
+        ->setHelp('hallo');
+
         yield EmailField::new('email');
         yield NumberField::new('plz');
         yield TextField::new('ort');
         yield TextField::new('telefon');
-        yield BooleanField::new('is_verified');
+        yield BooleanField::new('is_verified')
+        ->onlyWhenUpdating();
         yield DateField::new('created_at')
             ->hideWhenUpdating()
             ->hideWhenCreating();
@@ -87,6 +89,17 @@ class UserCrudController extends AbstractCrudController
                 'error_bubbling' => true,
                 'invalid_message' => 'The passwordfields do not match',
             ]);
+        yield TextField::new('Plainpassword', 'New password')
+            ->onlyWhenCreating()
+            ->setRequired(true)
+            ->setFormType(RepeatedType::class)
+            ->setFormTypeOptions([
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'New password'],
+                'second_options' => ['label' => 'Repeat password'],
+                'error_bubbling' => true,
+                'invalid_message' => 'The passwordfields do not match',
+            ]);
 
 
     }
@@ -95,7 +108,9 @@ class UserCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setPaginatorPageSize(5);
+            ->setPaginatorPageSize(5)
+            ->setDefaultSort(['id' => 'ASC']);
+
     }
 
     public function configureActions(Actions $actions): Actions
@@ -110,11 +125,6 @@ class UserCrudController extends AbstractCrudController
         if (!($entityInstance instanceof User)) {
             dd('ok');
         }
-
-
-
-
-
 
 
 //        dd($entityInstance->getPlainpassword());
