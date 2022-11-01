@@ -59,11 +59,16 @@ class UserCrudController extends AbstractCrudController
 
         yield IdField::new('id')
             ->onlyOnIndex();
+
         yield TextField::new('name')
             ->setTemplatePath('admin/field/name.html.twig')
         ->setHelp('hallo');
 
         yield EmailField::new('email');
+
+
+
+
         yield NumberField::new('plz');
         yield TextField::new('ort');
         yield TextField::new('telefon');
