@@ -61,28 +61,34 @@ class UserCrudController extends AbstractCrudController
             ->onlyOnIndex();
 
         yield TextField::new('name')
-            ->setTemplatePath('admin/field/name.html.twig')
-        ->setHelp('hallo');
+            ->setTemplatePath('admin/field/name.html.twig');
+
 
         yield EmailField::new('email');
 
 
 
+        yield NumberField::new('plz', 'PLZ');
 
-        yield NumberField::new('plz');
         yield TextField::new('ort');
+
         yield TextField::new('telefon');
+
         yield BooleanField::new('is_verified')
-        ->onlyWhenUpdating();
+            ->onlyWhenUpdating();
+
         yield DateField::new('created_at')
             ->hideWhenUpdating()
             ->hideWhenCreating();
-        $roles = ['ROLE_USER', 'ROLE_ADMIN'];
+
+//        $roles = ['ROLE_USER', 'ROLE_ADMIN'];
+        $roles = $this->getParameter('app.roles');
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($roles, $roles))
             ->allowMultipleChoices()
             ->renderExpanded()
-            ->setPermission('POST_EDIT');
+            ->setPermission('ROLE_ADMIN');
+
         yield TextField::new('Plainpassword', 'New password')
             ->onlyWhenUpdating()
             ->setRequired(false)
@@ -94,6 +100,7 @@ class UserCrudController extends AbstractCrudController
                 'error_bubbling' => true,
                 'invalid_message' => 'The passwordfields do not match',
             ]);
+
         yield TextField::new('Plainpassword', 'New password')
             ->onlyWhenCreating()
             ->setRequired(true)
@@ -131,8 +138,6 @@ class UserCrudController extends AbstractCrudController
             dd('ok');
         }
 
-
-//        dd($entityInstance->getPlainpassword());
         if (!is_null($entityInstance->getPlainpassword())) {
 
 
@@ -145,7 +150,6 @@ class UserCrudController extends AbstractCrudController
 
             );
         }
-//    dd('test');
         $entityManager->persist($entityInstance);
         $entityManager->flush();
     }

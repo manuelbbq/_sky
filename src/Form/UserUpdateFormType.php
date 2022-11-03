@@ -29,7 +29,7 @@ class UserUpdateFormType extends AbstractType
                 ],
             ])
 
-            ->add('name')
+            ->add('name',TextType::class,['required' => false])
             ->add('plz')
             ->add('telefon')
 //            ->add('createdAt')
@@ -48,7 +48,7 @@ class UserUpdateFormType extends AbstractType
             ->addModelTransformer(new CallbackTransformer(
                 function ($rolesArray) {
                     // transform the array to a string
-                    return count($rolesArray)? $rolesArray[0]: null;
+                    return count($rolesArray)? $rolesArray[1]: null;
                 },
                 function ($rolesString) {
                     // transform the string back to an array
